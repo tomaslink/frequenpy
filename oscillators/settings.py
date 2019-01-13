@@ -1,0 +1,1 @@
+ANIMATIONS_FOLDER = 'animations'

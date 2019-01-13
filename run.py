@@ -1,7 +1,7 @@
-from beaded_string import BeadedString
+from oscillators.beaded_string import BeadedString
 from settings import (
     NUMBER_OF_MASSES, NORMAL_MODES, BOUNDARY_CONDITION, ELASTIC_CONSTANT,
-    LONGITUDE, LINEAR_DENSITY, AMPLITUDE, NUMBER_OF_FRAMES, SAVE_ANIM
+    LONGITUDE, LINEAR_DENSITY, AMPLITUDE, NUMBER_OF_FRAMES, SAVE_ANIMATION
 )
 
 
@@ -16,7 +16,7 @@ def execute():
         LINEAR_DENSITY,
         AMPLITUDE,
         NUMBER_OF_FRAMES,
-        SAVE_ANIM)
+        SAVE_ANIMATION)
 
     beaded_string.animate()
 
