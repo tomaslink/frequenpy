@@ -1,13 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import matplotlib.style as mplstyle
 from settings import FIXED_BOUNDARY, MIXED_BOUNDARY, FREE_BOUNDARY
+
+mplstyle.use('fast')
 
 
 class CoupledOscillators(object):
 
-    def __init__(self, N, modes, boundary, elastic_constant, longitude, rho, amplitude, save_anim):
-        self._N = N
+    def __init__(self, n_masses, modes, boundary, elastic_constant, longitude, rho, amplitude, save_anim):
+        self._n_masses = n_masses
         self._modes = modes
         self._boundary = boundary
         self._elastic_constant = elastic_constant
@@ -16,27 +19,42 @@ class CoupledOscillators(object):
         self._amplitude = amplitude
         self._save_anim = save_anim
 
-        self._a = longitude / (N + 1)
+        self._a = longitude / (n_masses + 1)
         m = rho * self._a
         K = (elastic_constant / self._a)
         w0_2 = K / m
         self._M = self._tridiagonal_matrix(-1 * w0_2, 2 * w0_2, -1 * w0_2)
-        self._w2 = self._frequencies()
-        self.springs = self._build_springs()
+        self._omega_squared = self._frequencies()
+        self._springs = self._build_springs()
+        self._frames = self._build_frames()
+
+    def _resolve_marker_size(self):
+        N = self._n_masses
+        marker_size = 0
+        if (N > 50):
+            marker_size = 0
+        elif (N > 30):
+            marker_size = 2
+        elif (N > 15):
+            marker_size = 4
+        else:
+            marker_size = 8
+        return marker_size
 
     def _build_springs(self):
-        N = self._N
+        N = self._n_masses
         a = self._a
         L = self._longitude
         resortes = []
-        for n in range(0, self._N + 1):
-
+        for n in range(0, N + 1):
             X = [-L / 2 + n * a, -L / 2 + (n + 1) * a]
             Y = [0, 0]
-            if (N > 20):
-                resorte = plt.Line2D(X, Y, color='black')
-            else:
-                resorte = plt.Line2D(X, Y, color='black', marker='o', markersize='4', markerfacecolor='blue')
+            resorte = plt.Line2D(
+                X, Y, color='black',
+                marker='o',
+                markersize=self._resolve_marker_size(),
+                markerfacecolor='blue'
+            )
             resortes.append(resorte)
         return resortes
 
@@ -44,12 +62,16 @@ class CoupledOscillators(object):
         L = self._longitude
         plt.clf()
         fig = plt.figure(figsize=(10, 5))
-        fig.set_dpi(75)
+        fig.set_dpi(100)
         ax = plt.axes(xlim=(-1, 1), ylim=(-1, 1), frameon=False)
         ax.set_xticks([])
         ax.set_yticks([])
-        # ax.add_line(plt.Line2D((-L / 2, -L / 2), (0.8, 0.8), lw=2.5, color='black'))
-        # ax.add_line(plt.Line2D((L / 2, L / 2), (-0.8, 0.8), lw=2.5, color='black'))
+        ax.add_line(
+            plt.Line2D((-L / 2, -L / 2), (-0.8, 0.8), lw=2.5, color='black')
+        )
+        ax.add_line(
+            plt.Line2D((L / 2, L / 2), (-0.8, 0.8), lw=2.5, color='black')
+        )
 
         for resorte in self.springs:
             ax.add_line(resorte)
@@ -57,42 +79,51 @@ class CoupledOscillators(object):
 
     def _frequencies(self):
         M = self._M
-        w2, D = np.linalg.eig(M)
-        sort_perm = w2.argsort()
-        D = D[:, sort_perm]
-        D = np.transpose(D)
+        w2, _ = np.linalg.eig(M)
         w2.sort()
         return w2
 
-    def _tridiagonal_matrix(self, abajo, medio, arriba):
-        N = self._N
-        M = []
-        for m in range(0, N):
-            fila = []
-            for n in range(0, N):
-                if m == n:
-                    fila.append(medio)
-                elif n == (m - 1):
-                    fila.append(abajo)
-                elif n == (m + 1):
-                    fila.append(arriba)
-                else:
-                    fila.append(0)
-            M.append(fila)
-        return M
+    def _tridiagonal_matrix(self, low, mid, upp):
+        N = self._n_masses
+        A = np.eye(N, N, k=-1) * low + \
+            np.eye(N, N) * mid + \
+            np.eye(N, N, k=1) * upp
+        A[A == 0.] = 0.
+        return A
 
-    def _w(self, p):
-        return np.sqrt(self._w2[p - 1])
+    def _omega(self, p):
+        return np.sqrt(self._omega_squared[p - 1])
 
     def _normal_mode_p_for_mass_n(self, p, n):
-        return (p * n * np.pi) / (self._N + 1)
+        return (p * n * np.pi) / (self._n_masses + 1)
 
-    def equation_form_mass_n(self, n, t):
+    def _position_for_mass_n_at_time_t(self, n, t):
         A = self._amplitude
-        equation = np.sin(0)
-        for p in self._modes:
-            equation += A * np.sin(self._normal_mode_p_for_mass_n(p, n)) * np.cos(np.radians(self._w(p) * t))
-        return equation
+        return sum([
+            A *
+            np.sin(self._normal_mode_p_for_mass_n(p, n)) *
+            np.cos(np.radians(self._omega(p) * t))
+            for p
+            in self._modes
+        ])
+
+    def _build_frames(self):
+        empty_frames = [None] * 500
+        frames = [empty_frames.copy() for x in self.springs]
+        for i in range(0, len(frames)):
+            for j in range(0, len(frames[0])):
+                left_y = self._position_for_mass_n_at_time_t(i, j)
+                right_y = self._position_for_mass_n_at_time_t(i + 1, j)
+                frames[i][j] = (left_y, right_y)
+        return frames
+
+    @property
+    def springs(self):
+        return self._springs
+
+    @property
+    def frames(self):
+        return self._frames
 
 
 def init():
@@ -101,8 +132,8 @@ def init():
 
 def execute():
 
-    N = 10
-    modes = (1, 2, 3,)
+    N = 20
+    modes = (1, 2, 3, 4, 5)
     boundary = 0
     k_i = 0.2
     L = 1.5              # largo total (metros)
@@ -116,7 +147,7 @@ def execute():
     anim = animation.FuncAnimation(fig, animate,
                                    init_func=init,
                                    fargs=(system,),
-                                   frames=500,
+                                   frames=len(system.frames[0]),
                                    interval=30,
                                    blit=True,
                                    repeat=True)
@@ -130,13 +161,9 @@ def execute():
 def animate(i, system):
     global tiempo
     for r in range(0, len(system.springs)):
-        resorte = system.springs[r]
+        spring = system.springs[r]
         tiempo = i
-        masaIzquierda = r
-        masaDerecha = r + 1
-        yIzq = system.equation_form_mass_n(masaIzquierda, tiempo)
-        yDer = system.equation_form_mass_n(masaDerecha, tiempo)
-        resorte.set_data(resorte.get_xdata(), [yIzq, yDer])
+        spring.set_data(spring.get_xdata(), system.frames[r][i])
     return[]
 
 
