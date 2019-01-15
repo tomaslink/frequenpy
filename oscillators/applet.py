@@ -2,12 +2,8 @@ from __future__ import division
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-from pathlib import Path
-import os
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from tkinter import *
-import tkinter.ttk as ttk
-import copy
+from tkinter import Tk, Frame, Label, Scale, Button, mainloop, ttk
 
 # FIGURA
 plt.clf()
@@ -128,8 +124,9 @@ def construirResortes():
         if (N > 25):
             resorte = plt.Line2D(X, Y, color='white', lw=0.3)
         else:
-            resorte = plt.Line2D(X, Y, color='white', lw=0.3,
-                                 marker='o', markersize='5', markerfacecolor='white')
+            resorte = plt.Line2D(
+                X, Y, color='white',
+                lw=0.3, marker='o', markersize='5', markerfacecolor='white')
         resortes.append(resorte)
     return resortes
 
@@ -198,7 +195,8 @@ def w(p):
 
 
 def modoNormalPdeMasaN(p, n, t):
-    return A_p(p) * np.sin(k(p) * n * a() + phi()) * np.cos(w(p) * t * VELOCIDAD + theta_p(p))
+    return A_p(p) * np.sin(
+        k(p) * n * a() + phi()) * np.cos(w(p) * t * VELOCIDAD + theta_p(p))
 
 
 def ecuacionDeMasaN(modes, n, t):
@@ -247,7 +245,8 @@ def cambiarVelocidad(event):
     vActual = VELOCIDAD
     VELOCIDAD = porcentajeVelocidad.get() / 100
     thetaActual = theta
-    for p in modos:  # Ajusta la fase inicial del siguiente frame para que el cambio sea fluido
+    # Ajusta la fase inicial del siguiente frame para que el cambio sea fluido
+    for p in modos:
         frecActual = w(p) * vActual
         theta[p] = (frecActual - w(p) * VELOCIDAD) * \
             (tiempo + 1) + thetaActual[p]
@@ -285,8 +284,9 @@ button.pack(side="right")
 
 
 def dibujarControlModo(i):
-    controlModo = Scale(bottom_row, from_=100, to=0, width=10, showvalue=0,
-                        orient="vertical", command=lambda _, modo=i: cambiarAmplitudModo(modo))
+    controlModo = Scale(
+        bottom_row, from_=100, to=0, width=10, showvalue=0,
+        orient="vertical", command=lambda _, modo=i: cambiarAmplitudModo(modo))
     controlModo.set(modos[i] * 100)
     controlesModos.append(controlModo)
     controlModo.pack(side="left", padx=1)
@@ -333,8 +333,9 @@ def cambiarCantidadMasas(event):
     iniciarAnimacion()
 
 
-porcentajeVelocidad = Scale(center, from_=0, to=200, length=100,
-                            label='Velocidad', orient="horizontal", command=cambiarVelocidad)
+porcentajeVelocidad = Scale(
+    center, from_=0, to=200, length=100,
+    label='Velocidad', orient="horizontal", command=cambiarVelocidad)
 porcentajeVelocidad.set(100)
 porcentajeVelocidad.pack(pady=20, padx=1)
 
@@ -358,38 +359,4 @@ cantidadMasas.pack(pady=5)
 # Invoca la animacion
 iniciarAnimacion()
 
-# Guarda la animacion
-
-
-def guardarAnimacion():
-    if (saveAnim == "y"):
-        name = 'transversal-' + str(N) + 'masas-Modos-'
-        for m in range(0, len(modos)):
-            if (m == len(modos) - 1):
-                extremos = ''
-                if (contorno == EXTREMOS_FIJOS):
-                    extremos += "-EXTREMOS-FIJOS"
-                elif (contorno == EXTREMOS_MIXTOS):
-                    extremos += "-EXTREMOS-MIXTOS"
-                elif (contorno == EXTREMOS_LIBRES):
-                    extremos += "-EXTREOMS-LIBRES"
-                name += str(modos[m]) + extremos + '-version-'
-            else:
-                name += str(modos[m]) + "-"
-        version = 1
-        name += str(version)
-        path = os.path.dirname(os.path.abspath(__file__))
-        while (Path(path + '/' + name + '.mp4').is_file()):
-            name = name[:-1]
-            version += 1
-            if (version > 10):
-                version -= 10
-            name += str(version)
-
-        print("GUARDANDO ANIMACION...ESTO PUEDE LLEVAR UN RATO")
-        anim.save(name + '.mp4')
-
-
 mainloop()
-
-# plt.show()
