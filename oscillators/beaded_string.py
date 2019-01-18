@@ -51,7 +51,13 @@ class BeadedString(object):
     def _build_beaded_string(self):
         X, Y = self._beads_coordinates()
         return plt.Line2D(
-            X, Y, marker='o', lw=2, markersize=self._marker_size()
+            X, Y,
+            marker='o',
+            lw=0.3,
+            markersize=self._marker_size(),
+            markerfacecolor='white',
+            color='white',
+            markevery=slice(1, self._number_of_masses + 1, 1)
         )
 
     def _beads_coordinates(self):
@@ -76,7 +82,7 @@ class BeadedString(object):
         ])
 
     def _build_figure(self):
-        fig = plt.figure(figsize=(10, 5))
+        fig = plt.figure(figsize=(10, 5), facecolor='black')
         fig.set_dpi(100)
         ax = plt.axes(xlim=(-1, 1), ylim=(-1, 1), frameon=False)
         ax.set_xticks([])
@@ -90,8 +96,8 @@ class BeadedString(object):
         return plt.Line2D(
             x_coordinates,
             (-0.8, 0.8),
-            lw=2.5,
-            color='black'
+            lw=0.5,
+            color='white'
         )
 
     def _left_wall(self):
@@ -119,9 +125,12 @@ class BeadedString(object):
         return (p * n * np.pi) / (self._number_of_masses + 1)
 
     def _position_for_mass_n_at_time_t(self, n, t):
+        phi = 0
+        if self._boundary_condition == 2:
+            phi = np.pi / 2
         return sum([
             self._amplitude *
-            np.sin(self._normal_mode_p_for_mass_n(p, n)) *
+            np.sin(self._normal_mode_p_for_mass_n(p, n) + phi) *
             np.cos(np.radians(self._omega(p) * t))
             for p
             in self._normal_modes
@@ -140,7 +149,7 @@ class BeadedString(object):
             self._figure,
             self._update,
             frames=self._number_of_frames,
-            interval=10,
+            interval=5,
             blit=True,
             repeat=True)
 
