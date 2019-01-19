@@ -7,17 +7,18 @@ from os import path, makedirs
 
 class BeadedString(object):
 
+    FIXED = 0
+    FREE = 1
+    MIXED = 2
+
     def __init__(
         self, number_of_masses, normal_modes, boundary_condition,
-        elastic_constant, longitude, linear_density, amplitude,
-        number_of_frames, save_animation, speed
+        longitude, amplitude, number_of_frames, save_animation, speed
     ):
         self._number_of_masses = number_of_masses
         self._normal_modes = normal_modes
         self._boundary_condition = boundary_condition
-        self._elastic_constant = elastic_constant
         self._longitude = longitude
-        self._linear_density = linear_density
         self._amplitude = amplitude
         self._number_of_frames = number_of_frames
         self._save_animation = save_animation
@@ -33,10 +34,7 @@ class BeadedString(object):
         self._figure = self._build_figure()
 
     def _tridiagonal_matrix(self):
-        m = self._linear_density * self._separation
-        K = (self._elastic_constant / self._separation)
-        w0_2 = K / m
-        low, mid, upp = (-1 * w0_2, 2 * w0_2, -1 * w0_2)
+        low, mid, upp = (-1, 2, -1)
         N = self._number_of_masses
         A = np.eye(N, N, k=-1) * low + \
             np.eye(N, N) * mid + \
@@ -126,8 +124,9 @@ class BeadedString(object):
         return (p * n * np.pi) / (self._number_of_masses + 1)
 
     def _position_for_mass_n_at_time_t(self, n, t):
-        phi = 0
-        if self._boundary_condition == 2:
+        if self._boundary_condition == BeadedString.FIXED:
+            phi = 0
+        if self._boundary_condition == BeadedString.FREE:
             phi = np.pi / 2
         return sum([
             self._amplitude *
