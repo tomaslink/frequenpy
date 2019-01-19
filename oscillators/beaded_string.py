@@ -10,7 +10,7 @@ class BeadedString(object):
     def __init__(
         self, number_of_masses, normal_modes, boundary_condition,
         elastic_constant, longitude, linear_density, amplitude,
-        number_of_frames, save_animation
+        number_of_frames, save_animation, speed
     ):
         self._number_of_masses = number_of_masses
         self._normal_modes = normal_modes
@@ -22,6 +22,7 @@ class BeadedString(object):
         self._number_of_frames = number_of_frames
         self._save_animation = save_animation
         self._separation = longitude / (number_of_masses + 1)
+        self._speed = speed
         self._prepare()
 
     def _prepare(self):
@@ -131,7 +132,7 @@ class BeadedString(object):
         return sum([
             self._amplitude *
             np.sin(self._normal_mode_p_for_mass_n(p, n) + phi) *
-            np.cos(np.radians(self._omega(p) * t))
+            np.cos(np.radians(self._omega(p) * t * self._speed))
             for p
             in self._normal_modes
         ])
