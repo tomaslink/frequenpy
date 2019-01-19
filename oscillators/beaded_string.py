@@ -53,7 +53,7 @@ class BeadedString(object):
             X, Y,
             marker='o',
             lw=0.3,
-            markersize=self._marker_size(),
+            markersize=5,
             markerfacecolor='white',
             color='white',
             markevery=slice(1, self._number_of_masses + 1, 1)
@@ -105,28 +105,26 @@ class BeadedString(object):
     def _ritgh_wall(self):
         return self._wall((self._longitude / 2, self._longitude / 2))
 
-    def _marker_size(self):
-        marker_size = 8
-        if self._number_of_masses > 40:
-            marker_size = 0
-        elif self._number_of_masses > 30:
-            marker_size = 2
-        elif self._number_of_masses > 20:
-            marker_size = 4
-        elif self._number_of_masses > 10:
-            marker_size = 6
-        return marker_size
-
     def _omega(self, p):
         return np.sqrt(self._omega_squared[p - 1])
 
     def _normal_mode_p_for_mass_n(self, p, n):
-        return (p * n * np.pi) / (self._number_of_masses + 1)
+        if (
+            self._boundary_condition == BeadedString.FIXED or
+            self._boundary_condition == BeadedString.FREE
+        ):
+            return (p * n * np.pi) / (self._number_of_masses + 1)
+        else:
+            p = p - 1
+            return ((p + 1 / 2) * n * np.pi) / (self._number_of_masses + 1)
 
     def _position_for_mass_n_at_time_t(self, n, t):
-        if self._boundary_condition == BeadedString.FIXED:
+        if (
+            self._boundary_condition == BeadedString.FIXED or
+            self._boundary_condition == BeadedString.MIXED
+        ):
             phi = 0
-        if self._boundary_condition == BeadedString.FREE:
+        else:
             phi = np.pi / 2
         return sum([
             self._amplitude *
