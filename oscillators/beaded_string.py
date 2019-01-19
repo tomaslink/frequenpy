@@ -4,12 +4,29 @@ import matplotlib.animation as animation
 from .settings import ANIMATIONS_FOLDER
 from os import path, makedirs
 
+BOUNDARY_FIXED = 0
+BOUNDARY_FREE = 1
+BOUNDARY_MIXED = 2
+
+STRING_WIDTH = 0.3
+STRING_MARKERTYPE = 'o'
+STRING_MARKERSIZE = 5
+STRING_MARKERFACECOLOR = 'white'
+STRING_COLOR = 'white'
+
+BACKGROUND_COLOR = 'black'
+
+WALL_HEIGHT = 0.8
+WALL_WIDTH = 0.5
+WALL_COLOR = 'white'
+
+FIG_SIZE = (10, 5)
+FIG_DPI = 100
+FIG_X_LIMIT = (-1, 1)
+FIG_Y_LIMIT = (-1, 1)
+
 
 class BeadedString(object):
-
-    FIXED = 0
-    FREE = 1
-    MIXED = 2
 
     def __init__(
         self, number_of_masses, normal_modes, boundary_condition,
@@ -51,11 +68,11 @@ class BeadedString(object):
         X, Y = self._beads_coordinates()
         return plt.Line2D(
             X, Y,
-            marker='o',
-            lw=0.3,
-            markersize=5,
-            markerfacecolor='white',
-            color='white',
+            marker=STRING_MARKERTYPE,
+            lw=STRING_WIDTH,
+            markersize=STRING_MARKERSIZE,
+            markerfacecolor=STRING_MARKERFACECOLOR,
+            color=STRING_COLOR,
             markevery=slice(1, self._number_of_masses + 1, 1)
         )
 
@@ -81,9 +98,9 @@ class BeadedString(object):
         ])
 
     def _build_figure(self):
-        fig = plt.figure(figsize=(10, 5), facecolor='black')
-        fig.set_dpi(100)
-        ax = plt.axes(xlim=(-1, 1), ylim=(-1, 1), frameon=False)
+        fig = plt.figure(figsize=FIG_SIZE, facecolor=BACKGROUND_COLOR)
+        fig.set_dpi(FIG_DPI)
+        ax = plt.axes(xlim=FIG_X_LIMIT, ylim=FIG_Y_LIMIT, frameon=False)
         ax.set_xticks([])
         ax.set_yticks([])
         ax.add_line(self._left_wall())
@@ -94,9 +111,9 @@ class BeadedString(object):
     def _wall(self, x_coordinates):
         return plt.Line2D(
             x_coordinates,
-            (-0.8, 0.8),
-            lw=0.5,
-            color='white'
+            (-WALL_HEIGHT, WALL_HEIGHT),
+            lw=WALL_WIDTH,
+            color=WALL_COLOR
         )
 
     def _left_wall(self):
@@ -110,8 +127,8 @@ class BeadedString(object):
 
     def _normal_mode_p_for_mass_n(self, p, n):
         if (
-            self._boundary_condition == BeadedString.FIXED or
-            self._boundary_condition == BeadedString.FREE
+            self._boundary_condition == BOUNDARY_FIXED or
+            self._boundary_condition == BOUNDARY_FREE
         ):
             return (p * n * np.pi) / (self._number_of_masses + 1)
         else:
@@ -120,8 +137,8 @@ class BeadedString(object):
 
     def _position_for_mass_n_at_time_t(self, n, t):
         if (
-            self._boundary_condition == BeadedString.FIXED or
-            self._boundary_condition == BeadedString.MIXED
+            self._boundary_condition == BOUNDARY_FIXED or
+            self._boundary_condition == BOUNDARY_MIXED
         ):
             phi = 0
         else:
