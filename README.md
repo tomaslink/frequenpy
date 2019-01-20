@@ -3,8 +3,9 @@
 
 _FrequenPy_ is a high-precision physics engine dedicated to the study of standing waves and visualization of its normal modes.
 
+<p align="center">
 ![](beaded_string.gif)
-
+</p>
 ## Table of Contents
 
 - [Motivation](#motivation)
@@ -30,6 +31,8 @@ The idea is to keep adding differents physics systems that are valuable to visua
 I will improve this section later by adding a minimal mathematical derivations and important equations to understad better the systems in question. 
 
 For now, the only system available to play with is a beaded string loaded with N masses (N degrees of freedom), oscillating transversally. The theory says that any arbitrary movement of the string can be decomposed into a superposition of natural modes of oscillation, that have the particularity that when the system is oscillating in one of this natural modes, all masses in the system move at the same frequency and pass through the equilibrium position at the same time. This natural modes of oscillation are called normal modes. There are as many normal modes as there are degrees of freedom in the system. So, a string loeaded with 10 masses, will have 10 natural frequencies, the first being the lowest (called fundamental) and each next higher than the previous one, until reaching the last and highest frequency. Any movement, as strange as it may be, can be expressed as a superposition of those 10 normal modes (some will contribute more than others to the final movement). 
+
+As the number of masses gets higher (Ideally, N --> inf), we approximate to the continuous system, that is, a vibrating string (no discrete masses). With N = 40 you can see the effect. 
 
 To be completed. 
 
@@ -58,7 +61,7 @@ pip3 install -r requirements.txt
 
 ### Configuration
 
-Before running, you can play with the parameters of the system in the settings.py. Remember there is one normal mode per mass in the system. You can make a list of only one of them, or a combination of several normal modes. Boundary condition can be 0, 1, or 2, meaning Fixed ends, free ends, or mixed ends (left fixed and right free). The speed parameter is important because for very high frequencies, which can appear if the number of masses is high, the appreciation of the movement can be difficult, and it is convenient to reduce the speed of the animation.
+Before running, you can play with the parameters of the system in the settings.py. Remember there is one normal mode per mass in the system. You can make a list of only one of them, or a combination of several normal modes. The order doesn't matter. Boundary condition can be 0, 1, or 2, meaning Fixed ends, free ends, or mixed ends (left fixed and right free). The speed parameter is important because for very high frequencies, which can appear if the number of masses is high, the appreciation of the movement can be difficult, and it is convenient to reduce the speed of the animation.
 
 ```python
 NUMBER_OF_MASSES = 5
@@ -82,9 +85,7 @@ python3 client.py
 
 -Add one plot for each individual normal mode that is contributing to the movement. 
 
--Introduce damping
-
--Introduce tension of the string as a parameter to play with.
+-Introduce damping and tension of the string as parameters to play with.
 
 -Add definition of initial conditions to generate more arbitrary and crazy movements of the string, like picking the string with your mouse and realease it from some position. 
 
