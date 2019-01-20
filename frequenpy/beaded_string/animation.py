@@ -3,11 +3,11 @@ from matplotlib import animation
 from os import path, makedirs
 
 
-STRING_WIDTH = 0.3
-STRING_MARKERTYPE = 'o'
-STRING_MARKERSIZE = 5
-STRING_MARKERFACECOLOR = 'white'
-STRING_COLOR = 'white'
+LINE_WIDTH = 0.3
+LINE_MARKERTYPE = 'o'
+LINE_MARKERSIZE = 5
+LINE_MARKERFACECOLOR = 'white'
+LINE_COLOR = 'white'
 
 BACKGROUND_COLOR = 'black'
 
@@ -17,7 +17,7 @@ WALL_COLOR = 'white'
 
 FIG_SIZE = (10, 5)
 FIG_DPI = 100
-FIG_X_LIMIT = (-1, 1)
+FIG_X_LIMIT = (-0.8, 0.8)
 FIG_Y_LIMIT = (-1, 1)
 
 ANIMATIONS_FOLDER = 'animations'
@@ -25,9 +25,10 @@ ANIMATIONS_FOLDER = 'animations'
 
 class Animation(object):
 
-    def __init__(self, beaded_string, number_of_frames, save_animation):
+    def __init__(self, beaded_string, number_of_frames, speed, save_animation):
         self._beaded_string = beaded_string
         self._number_of_frames = number_of_frames
+        self._speed = speed
         self._save_animation = save_animation
         self._line = self._build_line()
         self._frames = self._build_frames()
@@ -62,15 +63,16 @@ class Animation(object):
         X, Y = self._beaded_string.rest_positions()
         return plt.Line2D(
             X, Y,
-            marker=STRING_MARKERTYPE,
-            lw=STRING_WIDTH,
-            markersize=STRING_MARKERSIZE,
-            markerfacecolor=STRING_MARKERFACECOLOR,
-            color=STRING_COLOR,
-            markevery=slice(1, len(X) + 1, 1)
+            marker=LINE_MARKERTYPE,
+            lw=LINE_WIDTH,
+            markersize=LINE_MARKERSIZE,
+            markerfacecolor=LINE_MARKERFACECOLOR,
+            color=LINE_COLOR,
+            markevery=slice(1, len(X) - 1, 1)
         )
 
     def _build_frames(self):
+        self._beaded_string.apply_speed(self._speed)
         X = self._line.get_xdata()
         masses = range(0, len(X))
         frames = range(0, self._number_of_frames)
@@ -89,8 +91,8 @@ class Animation(object):
         self._line.set_data(self._frames[frame_number])
         return self._line,
 
-    def animate(self):
-        anim = animation.FuncAnimation(
+    def _build_animation(self):
+        return animation.FuncAnimation(
             self._figure,
             self._update,
             frames=self._number_of_frames,
@@ -98,15 +100,23 @@ class Animation(object):
             blit=True,
             repeat=True)
 
-        if (self._save_animation == 1):
-            print('Saving animation...this could take a while...')
-            name = "{}masses_{}modes.mp4".format(
-                self._beaded_string.number_of_masses,
-                str(self._beaded_string.normal_modes)
-            )
-            self._create_directory(ANIMATIONS_FOLDER)
-            full_path = path.join(ANIMATIONS_FOLDER, name)
-            anim.save(full_path)
+    def _save(self, animation):
+        print('Saving animation...this could take a while...')
+        name = "{}masses_{}modes.mp4".format(
+            self._beaded_string.number_of_masses,
+            str(self._beaded_string.normal_modes)
+        )
+        self._create_directory(ANIMATIONS_FOLDER)
+        full_path = path.join(ANIMATIONS_FOLDER, name)
+        animation.save(
+            full_path, savefig_kwargs={'facecolor': BACKGROUND_COLOR}
+        )
+
+    def animate(self):
+        anim = self._build_animation()
+
+        if (self._save_animation):
+            self._save(anim)
 
         plt.show()
 

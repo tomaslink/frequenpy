@@ -5,14 +5,13 @@ from .. import math
 class BeadedString(object):
 
     def __init__(
-        self, number_of_masses, normal_modes, longitude, amplitude, speed
+        self, number_of_masses, normal_modes, longitude, amplitude
     ):
         self.number_of_masses = number_of_masses
         self.normal_modes = normal_modes
         self.longitude = longitude
         self._amplitude = amplitude
         self._separation = longitude / (number_of_masses + 1)
-        self._speed = speed
         self._frequencies = self._frequencies()
         self._phi = self._phi()
         self._theta = 0
@@ -39,8 +38,11 @@ class BeadedString(object):
             in self.normal_modes
         ])
 
+    def apply_speed(self, speed):
+        self._frequencies = self._frequencies * speed
+
     def _tridiagonal_matrix(self):
-        return math.tridiagonal_matrix(-1, 2, -1, self.number_of_masses)
+        return math.tridiagonal_matrix(-1, 2, -1, self.number_of_masses + 1)
 
     def _frequencies(self):
         return np.radians(
