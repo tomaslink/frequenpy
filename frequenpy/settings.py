@@ -1,1 +1,0 @@
-ANIMATIONS_FOLDER = 'animations'
