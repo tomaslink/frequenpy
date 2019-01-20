@@ -59,7 +59,7 @@ class Animation(object):
         return self._wall(x_distance_from_origin)
 
     def _build_line(self):
-        X, Y = self._beaded_string.initial_positions()
+        X, Y = self._beaded_string.rest_positions()
         return plt.Line2D(
             X, Y,
             marker=STRING_MARKERTYPE,
@@ -78,7 +78,7 @@ class Animation(object):
             (
                 X,
                 [
-                    self._beaded_string.position_for_mass_n_at_time_t(n, t)
+                    self._beaded_string.y_position_for_mass_n_at_time_t(n, t)
                     for n in masses
                 ]
             )

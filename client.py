@@ -1,4 +1,4 @@
-from frequenpy.beaded_string.beaded_string import BeadedString
+from frequenpy.beaded_string.beaded_string_factory import BeadedStringFactory
 from frequenpy.beaded_string.animation import Animation
 from settings import (
     NUMBER_OF_MASSES, NORMAL_MODES, BOUNDARY_CONDITION, LONGITUDE,
@@ -8,10 +8,10 @@ from settings import (
 
 def execute():
 
-    beaded_string = BeadedString(
+    beaded_string = BeadedStringFactory.create(
+        BOUNDARY_CONDITION,
         NUMBER_OF_MASSES,
         NORMAL_MODES,
-        BOUNDARY_CONDITION,
         LONGITUDE,
         AMPLITUDE,
         SPEED)
