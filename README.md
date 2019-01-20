@@ -4,8 +4,9 @@
 _FrequenPy_ is a high-precision physics engine dedicated to the study of standing waves and visualization of its normal modes.
 
 <p align="center">
-![](beaded_string.gif)
+	 <img src="beaded_string.gif">
 </p>
+
 ## Table of Contents
 
 - [Motivation](#motivation)
