@@ -3,9 +3,9 @@ from matplotlib import animation
 from os import path, makedirs
 
 
-LINE_WIDTH = 0.3
+LINE_WIDTH = 0.5
 LINE_MARKERTYPE = 'o'
-LINE_MARKERSIZE = 5
+LINE_MARKERSIZE = 8
 LINE_MARKERFACECOLOR = 'white'
 LINE_COLOR = 'white'
 
@@ -20,7 +20,14 @@ FIG_DPI = 100
 FIG_X_LIMIT = (-0.8, 0.8)
 FIG_Y_LIMIT = (-1, 1)
 
+MARGIN_LEFT = 0.05
+MARGIN_BOTTOM = 0.05
+MARGIN_RIGHT = 0.95
+MARGIN_TOP = 0.95
+
 ANIMATIONS_FOLDER = 'animations'
+
+CONTINUOUS_LIMIT = 30
 
 
 class Animation(object):
@@ -37,15 +44,21 @@ class Animation(object):
     def _build_figure(self):
         fig = plt.figure(figsize=FIG_SIZE, facecolor=BACKGROUND_COLOR)
         fig.set_dpi(FIG_DPI)
+        fig.subplots_adjust(
+            left=MARGIN_LEFT,
+            bottom=MARGIN_BOTTOM,
+            right=MARGIN_RIGHT,
+            top=MARGIN_TOP
+        )
         ax = plt.axes(xlim=FIG_X_LIMIT, ylim=FIG_Y_LIMIT, frameon=False)
-        ax.set_xticks([])
         ax.set_yticks([])
-        ax.add_line(self._left_wall(self._beaded_string.longitude / 2))
-        ax.add_line(self._ritgh_wall(self._beaded_string.longitude / 2))
+        ax.set_yticks([])
+        ax.add_line(self._left_support(self._beaded_string.longitude / 2))
+        ax.add_line(self._right_support(self._beaded_string.longitude / 2))
         ax.add_line(self._line)
         return fig
 
-    def _wall(self, x_coordinate):
+    def _support(self, x_coordinate):
         return plt.Line2D(
             (x_coordinate, x_coordinate),
             (-WALL_HEIGHT, WALL_HEIGHT),
@@ -53,13 +66,19 @@ class Animation(object):
             color=WALL_COLOR
         )
 
-    def _left_wall(self, x_distance_from_origin):
-        return self._wall(-x_distance_from_origin)
+    def _left_support(self, x_distance_from_origin):
+        return self._support(-x_distance_from_origin)
 
-    def _ritgh_wall(self, x_distance_from_origin):
-        return self._wall(x_distance_from_origin)
+    def _right_support(self, x_distance_from_origin):
+        return self._support(x_distance_from_origin)
 
     def _build_line(self):
+        if self._beaded_string.number_of_masses > CONTINUOUS_LIMIT:
+            return self._build_line_without_markers()
+        else:
+            return self._build_line_with_markers()
+
+    def _build_line_with_markers(self):
         X, Y = self._beaded_string.rest_positions()
         return plt.Line2D(
             X, Y,
@@ -69,6 +88,14 @@ class Animation(object):
             markerfacecolor=LINE_MARKERFACECOLOR,
             color=LINE_COLOR,
             markevery=slice(1, len(X) - 1, 1)
+        )
+
+    def _build_line_without_markers(self):
+        X, Y = self._beaded_string.rest_positions()
+        return plt.Line2D(
+            X, Y,
+            lw=LINE_WIDTH,
+            color=LINE_COLOR
         )
 
     def _build_frames(self):
