@@ -104,15 +104,10 @@ class Animation(object):
         masses = range(0, len(X))
         frames = range(0, self._number_of_frames)
         return [
-            (
-                X,
-                [
-                    self._beaded_string.y_position_for_mass_n_at_time_t(n, t)
-                    for n in masses
-                ]
-            )
-            for t in frames
-        ]
+            (X, [
+                self._beaded_string.y_position_for_mass_n_at_time_t(n, t)
+                for n in masses])
+            for t in frames]
 
     def _update(self, frame_number):
         self._line.set_data(self._frames[frame_number])

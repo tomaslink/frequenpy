@@ -6,7 +6,7 @@ from frequenpy.beaded_string.beaded_string_factory import BeadedStringFactory
 from frequenpy.beaded_string.animation import Animation
 
 NUMBER_OF_FRAMES = 2000
-DEFAULT_SPEED = 1
+DEFAULT_SPEED = 1.5
 DEFAULT_SAVE = False
 
 HELP = 'Choose a system to simulate'
@@ -27,8 +27,10 @@ def execute_bs(boundary, masses, modes, speed, save_animation):
         )
         animation.animate()
     except Exception as e:
-        traceback.print_exc()
-        logging.error(e)
+        tpl = "An exception of type {} occured: {}"
+        a = traceback.format_exc()
+        logging.debug(a)
+        logging.error(tpl.format(type(e), e))
 
 
 def main():
@@ -41,14 +43,13 @@ def main():
     bs.add_argument('-m', '--modes', required=True, nargs='+', help=BS_M_HELP)
     bs.add_argument('-b', '--boundary', required=True, help=BS_B_HELP)
     bs.add_argument('-s', '--speed', required=False, help=BS_S_HELP)
-    bs.add_argument('--save', required=False, action='store_true', help=BS_R_HELP)
+    bs.add_argument('--save', action='store_true', help=BS_R_HELP)
 
     if len(sys.argv) < 2:
         parser.print_help()
         sys.exit(1)
 
     args = parser.parse_args()
-    print(list(map(int, args.modes)))
     if args.system == 'bs':
         execute_bs(
             int(args.boundary),
