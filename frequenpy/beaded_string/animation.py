@@ -142,7 +142,7 @@ class Animation(object):
     def animate(self):
         anim = self._build_animation()
 
-        if (self._save_animation):
+        if self._save_animation:
             self._save(anim)
 
         plt.show()
