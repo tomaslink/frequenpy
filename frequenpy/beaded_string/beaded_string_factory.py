@@ -17,12 +17,19 @@ class BeadedStringFactory(object):
 
         if N < 1 or N > 40:
             raise ValueError(
-                "Number of masses must be a number between 1 and 40")
+                "Number of masses must be an integer number between 1 and 40")
 
         if len(modes) > N:
             raise ValueError(
-                ("The normal modes must be less "
+                ("The number of normal modes must be less "
                     "or equal than the number of masses!"))
+
+        for mode in modes:
+            if mode > N:
+                raise ValueError(
+                    "The max. normal mode for this system is {}".format(N))
+            if mode < 1:
+                raise ValueError("The min. normal mode is 1!")
 
     @staticmethod
     def create(boundary_condition, number_of_masses, normal_modes):
