@@ -43,7 +43,7 @@ def add_beaded_string_parser(subparsers):
         BEADED_STRING_PARSER_NAME,
         help=BEADED_STRING_HELP
     )
-    req = bs.add_argument_group("Required arguments")
+    req = bs.add_argument_group("required arguments")
     req.add_argument(
         '-n',
         dest='masses',
@@ -63,13 +63,14 @@ def add_beaded_string_parser(subparsers):
         required=True,
         help=BEADED_STRING_BOUNDARY_HELP
     )
-    req.add_argument(
+    opt = bs.add_argument_group("more optional arguments")
+    opt.add_argument(
         '-s',
         dest='speed',
         required=False,
         help=BEADED_STRING_SPEED_HELP
     )
-    req.add_argument(
+    opt.add_argument(
         '--save',
         action='store_true',
         help=BEADED_STRING_SAVE_HELP
