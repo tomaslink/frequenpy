@@ -1,4 +1,4 @@
-from .beaded_string import (
+from frequenpy.beaded_string.beaded_string import (
     BeadedStringFixed, BeadedStringFree, BeadedStringMixed
 )
 
