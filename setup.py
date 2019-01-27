@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="frequenpy",
-    version="0.2.17",
+    version="0.2.0",
     author="Tomás Juan Link",
     author_email="tomaslink@gmail.com",
     description="Physics engine for standing waves",
@@ -15,8 +15,8 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3.5",
-	"Programming Language :: Python :: 3.6",
-	"Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ],
