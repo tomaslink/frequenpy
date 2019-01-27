@@ -1,9 +1,9 @@
 import logging
 import argparse
-import sys
 import traceback
 from frequenpy.beaded_string.beaded_string_factory import BeadedStringFactory
 from frequenpy.beaded_string.animation import Animation
+import sys
 
 
 NUMBER_OF_FRAMES = 2000

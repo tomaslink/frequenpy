@@ -1,5 +1,5 @@
 import numpy as np
-from .. import math
+from frequenpy import math_utils as math
 
 
 class BeadedString(object):

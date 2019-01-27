@@ -4,7 +4,7 @@
 _FrequenPy_ is a high-precision physics engine dedicated to the study of standing waves and visualization of its normal modes.
 
 <p align="center">
-	 <img src="beaded_string.gif">
+	 <img src="docs/beaded_string.gif">
 </p>
 
 ## Table of Contents
@@ -14,8 +14,7 @@ _FrequenPy_ is a high-precision physics engine dedicated to the study of standin
 - [Requirements](#requirements)
 - [Documentation](#documentation)
 - [Usage](#usage)
-	* [Cloning the repo](#cloning-the-repo)
-	* [Installing dependencies](#installing-dependencies)
+	* [Installation](#installation)
 	* [Execution](#execution)
 - [Ideas](#ideas)
 
@@ -38,7 +37,7 @@ To be completed.
 
 ## Requirements
 
-Frequenpy uses Python3. 
+Frequenpy was tested with python3.7.2 in ArchLinux. 
 
 ## Documentation
 
@@ -46,26 +45,21 @@ To be completed.
 
 ## Usage
 
-### Cloning the repo
-First of all, clone the repository:
-```
-git clone https://github.com/tomasjuanlink/frequenpy.git
-```
+### Installation
 
-### Installing dependencies
+To install FrequenPy, just run:
 
-Frequenpy uses numpy and matplotlib. To install them just run:
 ```
-pip3 install -r requirements.txt
+pip3 install frequenpy
 ```
 
 
 ### Execution
 
-Just run:
+Once installed, just run:
 
 ```
-python3 frequenpy.py
+frequenpy
 ```
 
 This will prompt the following help output:
