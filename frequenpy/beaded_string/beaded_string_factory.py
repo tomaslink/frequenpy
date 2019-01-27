@@ -3,8 +3,8 @@ from frequenpy.beaded_string.beaded_string import (
 )
 
 BOUNDARY_FIXED = 0
-BOUNDARY_FREE = 1
-BOUNDARY_MIXED = 2
+BOUNDARY_MIXED = 1
+BOUNDARY_FREE = 2
 
 LONGITUDE = 1.5
 AMPLITUDE = 0.4
