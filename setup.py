@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="frequenpy",
-    version="0.2.9",
+    version="0.2.17",
     author="Tomás Juan Link",
     author_email="tomaslink@gmail.com",
     description="Physics engine for standing waves",
@@ -14,7 +14,9 @@ setuptools.setup(
     url="https://github.com/tomasjuanlink/frequenpy",
     packages=setuptools.find_packages(),
     classifiers=[
-        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.5",
+	"Programming Language :: Python :: 3.6",
+	"Programming Language :: Python :: 3.7",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ],
@@ -23,5 +25,5 @@ setuptools.setup(
             'frequenpy = frequenpy.cli:main',
         ]
     },
-    requires=['numpy', 'matplotlib']
+    install_requires=['numpy==1.15.4', 'matplotlib==3.0.2']
 )
