@@ -1,5 +1,5 @@
 import numpy as np
-from .. import math
+from frequenpy import math_utils as math
 
 
 class BeadedString(object):
@@ -60,17 +60,7 @@ class BeadedStringFixed(BeadedString):
         return 0
 
     def _wavenumber_for_mode_p_and_mass_n(self, p, n):
-        return (p * np.pi) / \
-            ((self.number_of_masses + 1) * self._separation)
-
-
-class BeadedStringFree(BeadedString):
-    def _phi(self):
-        return np.pi / 2
-
-    def _wavenumber_for_mode_p_and_mass_n(self, p, n):
-        return (p * np.pi) / \
-            ((self.number_of_masses + 1) * self._separation)
+        return (p * np.pi) / ((self.number_of_masses + 1) * self._separation)
 
 
 class BeadedStringMixed(BeadedString):
@@ -80,4 +70,12 @@ class BeadedStringMixed(BeadedString):
     def _wavenumber_for_mode_p_and_mass_n(self, p, n):
         p = p - 1
         return ((p + 1 / 2) * np.pi) / \
-            ((self.number_of_masses + 1) + self._separation)
+            ((self.number_of_masses + 1) * self._separation)
+
+
+class BeadedStringFree(BeadedString):
+    def _phi(self):
+        return np.pi / 2
+
+    def _wavenumber_for_mode_p_and_mass_n(self, p, n):
+        return (p * np.pi) / ((self.number_of_masses + 1) * self._separation)

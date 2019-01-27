@@ -4,7 +4,7 @@
 _FrequenPy_ is a high-precision physics engine dedicated to the study of standing waves and visualization of its normal modes.
 
 <p align="center">
-	 <img src="beaded_string.gif">
+	 <img src="docs/beaded_string.gif">
 </p>
 
 ## Table of Contents
@@ -14,9 +14,7 @@ _FrequenPy_ is a high-precision physics engine dedicated to the study of standin
 - [Requirements](#requirements)
 - [Documentation](#documentation)
 - [Usage](#usage)
-	* [Cloning the repo](#cloning-the-repo)
-	* [Installing dependencies](#installing-dependencies)
-	* [Configuration](#configuration)
+	* [Installation](#installation)
 	* [Execution](#execution)
 - [Ideas](#ideas)
 
@@ -39,7 +37,7 @@ To be completed.
 
 ## Requirements
 
-Frequenpy uses Python3. 
+Frequenpy was tested with python3.7.2 in ArchLinux. 
 
 ## Documentation
 
@@ -47,38 +45,68 @@ To be completed.
 
 ## Usage
 
-### Cloning the repo
-First of all, clone the repository:
-```
-git clone https://github.com/tomasjuanlink/frequenpy.git
-```
+### Installation
 
-### Installing dependencies
+To install FrequenPy, just run:
 
-Frequenpy uses numpy and matplotlib. To install them just run:
 ```
-pip3 install -r requirements.txt
+pip3 install frequenpy
 ```
 
-### Configuration
-
-Before running, you can play with the parameters of the system in the settings.py. Remember there is one normal mode per mass in the system. You can make a list of only one of them, or a combination of several normal modes. The order doesn't matter. Boundary condition can be 0, 1, or 2, meaning Fixed ends, free ends, or mixed ends (left fixed and right free). The speed parameter is important because for very high frequencies, which can appear if the number of masses is high, the appreciation of the movement can be difficult, and it is convenient to reduce the speed of the animation.
-
-```python
-NUMBER_OF_MASSES = 5
-NORMAL_MODES = [2, 5]
-BOUNDARY_CONDITION = 0
-SAVE_ANIMATION = False
-SPEED = 1
-```
 
 ### Execution
 
-Just run:
+Once installed, just run:
 
 ```
-python3 client.py
+frequenpy
 ```
+
+This will prompt the following help output:
+
+```bash
+usage: frequenpy.py [-h] {bs} ...
+
+positional arguments:
+  {bs}        Choose a system to simulate
+    bs        Transverse standing wave on a beaded string
+
+optional arguments:
+  -h, --help  show this help message and exit
+```
+
+and if you pass 'bs' as an argument:
+
+```
+python3 frequenpy.py bs
+```
+
+You'll get the help for running that particular system:
+
+```bash
+usage: frequenpy.py bs [-h] -n MASSES -m MODES [MODES ...] -b BOUNDARY
+                       [-s SPEED] [--save]
+
+optional arguments:
+  -h, --help            show this help message and exit
+
+required arguments:
+  -n MASSES             number of masses
+  -m MODES [MODES ...]  normal modes to combine. Ex: 1 2 3
+  -b BOUNDARY           0, 1, or 2, meanining fixed, free or mixed ends
+
+more optional arguments:
+  -s SPEED              animation speed. Can be a float number
+  --save                save the animation in mp4 format
+```
+
+
+You can play with the parameters of the system to visualize different situations. 
+- Remember there is one normal mode per mass in the system, i.e: 1, 2, 3....N. You can pass only one of them, or a combination of several normal modes. The order doesn't matter. 
+- Boundary condition can be 0, 1, or 2, meaning fixed ends, free ends, or mixed ends (left fixed and right free). 
+- The speed parameter is important because for very high frequencies, which can appear if the number of masses is high, the appreciation of the movement can be difficult, and it is convenient to reduce the speed of the animation.
+- Optionally, you can save the animation in mp4 format. 
+
 
 ## Ideas
 
