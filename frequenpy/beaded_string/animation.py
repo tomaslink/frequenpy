@@ -53,8 +53,10 @@ class Animation(object):
         ax = plt.axes(xlim=FIG_X_LIMIT, ylim=FIG_Y_LIMIT, frameon=False)
         ax.set_yticks([])
         ax.set_yticks([])
-        ax.add_line(self._left_support(self._beaded_string.longitude / 2))
-        ax.add_line(self._right_support(self._beaded_string.longitude / 2))
+        x_rest_position, _ = self._beaded_string.rest_position
+        support_distance_from_origin = abs(x_rest_position[0])
+        ax.add_line(self._left_support(support_distance_from_origin))
+        ax.add_line(self._right_support(support_distance_from_origin))
         ax.add_line(self._line)
         return fig
 
@@ -73,13 +75,13 @@ class Animation(object):
         return self._support(x_distance_from_origin)
 
     def _build_line(self):
-        if self._beaded_string.number_of_masses > CONTINUOUS_LIMIT:
+        if self._beaded_string.number_of_beads > CONTINUOUS_LIMIT:
             return self._build_line_without_markers()
         else:
             return self._build_line_with_markers()
 
     def _build_line_with_markers(self):
-        X, Y = self._beaded_string.rest_positions()
+        X, Y = self._beaded_string.rest_position
         return plt.Line2D(
             X, Y,
             marker=LINE_MARKERTYPE,
@@ -91,7 +93,7 @@ class Animation(object):
         )
 
     def _build_line_without_markers(self):
-        X, Y = self._beaded_string.rest_positions()
+        X, Y = self._beaded_string.rest_position
         return plt.Line2D(
             X, Y,
             lw=LINE_WIDTH,
@@ -100,14 +102,11 @@ class Animation(object):
 
     def _build_frames(self):
         self._beaded_string.apply_speed(self._speed)
-        X = self._line.get_xdata()
-        masses = range(0, len(X))
         frames = range(0, self._number_of_frames)
         return [
-            (X, [
-                self._beaded_string.y_position_for_mass_n_at_time_t(n, t)
-                for n in masses])
-            for t in frames]
+            self._beaded_string.position_at_time_t(t)
+            for t in frames
+        ]
 
     def _update(self, frame_number):
         self._line.set_data(self._frames[frame_number])
@@ -125,7 +124,7 @@ class Animation(object):
     def _save(self, animation):
         print('Saving animation...this could take a while...')
         name = "{}masses_{}modes.mp4".format(
-            self._beaded_string.number_of_masses,
+            self._beaded_string.number_of_beads,
             str(self._beaded_string.normal_modes)
         )
         self._create_directory(ANIMATIONS_FOLDER)
