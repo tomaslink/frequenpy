@@ -25,5 +25,5 @@ setuptools.setup(
             'frequenpy = frequenpy.cli:main',
         ]
     },
-    install_requires=['numpy==1.15.4', 'matplotlib==3.0.2']
+    install_requires=['numpy==1.22.0', 'matplotlib==3.0.2']
 )
