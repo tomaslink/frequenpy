@@ -18,13 +18,6 @@ _FrequenPy_ is a high-precision physics engine dedicated to the study of standin
 	* [Execution](#execution)
 - [Ideas](#ideas)
 
-## Motivation
-
-The project was conceived as an exercise to grasp more profoundly the concepts behind the wave theory of physics learnt at the university, in particular standing waves, whose visualizations i consider very beautiful and didactic. At first consisted of a single python script, but later i decided to transform the script into a well designed software to practice my general skills as a developer and keep discovering features in python (language that i fell in love with). Also, to be able to share this to anyone interested in learning something about this beatiful branch of physics, or maybe to help some undergraduate student with his studies. 
-However, if you really want to learn the physics behind, I encourage you to code some of this exercises by yourself.
-
-The idea is to keep adding differents physics systems that are valuable to visualize and to play with, as long as my free time and knowledge allow me.  
-
 ## Theoretical background
 
 I will improve this section later by adding a minimal mathematical derivations and important equations to understad better the systems in question. 
