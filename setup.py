@@ -1,10 +1,11 @@
 import setuptools
 
 from frequenpy.constants import APP_DESCRIPTION
+from frequenpy.version import __version__
 
 setuptools.setup(
     name="frequenpy",
-    version="0.2.0",
+    version=__version__,
     author="Tomás Juan Link",
     author_email="tomaslink@gmail.com",
     description=APP_DESCRIPTION,
