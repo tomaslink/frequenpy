@@ -4,3 +4,5 @@ animations
 dist
 build
 *egg-info*
+
+.venv
