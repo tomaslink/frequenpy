@@ -1,129 +1,116 @@
+import sys
 import logging
+
 import argparse
-import traceback
+
 import frequenpy.beaded_string.beaded_string_factory as factory
 from frequenpy.beaded_string.animation import Animation
-import sys
+
+from frequenpy.constants import APP_DESCRIPTION, APP_NAME
+
+logger = logging.getLogger(__name__)
 
 
+LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+
+
+GREETING = F'Welcome to {APP_NAME}!\n {APP_DESCRIPTION}'
+APP_EPILOG = 'Enjoy!'
 NUMBER_OF_FRAMES = 2000
 DEFAULT_SPEED = 1.5
-DEFAULT_SAVE = False
+
+BEADED_STRING = 'beaded_string'
+AVAILABLE_SYSTEMS = [BEADED_STRING]
+
+HELP_DEFAULT = '(default: %(default)s)'
+
+HELP_BEADED_STRING = 'Transverse oscillations on a beaded string.'
+HELP_BS_MASSES = 'Number of beads.'
+HELP_BS_MODES = f'Normal modes to combine. Ex: "1 2 3" {HELP_DEFAULT}.'
+HELP_BS_BOUNDARY = f'Boundary conditions: 0 (fixed), 1 (free), or 2 (mixed) {HELP_DEFAULT}.'
+HELP_BS_SAVE = f'Save the animation in mp4 format {HELP_DEFAULT}.'
+HELP_BS_SPEED = f'Animation speed. Can be a float number {HELP_DEFAULT}.'
 
 
-DESCRIPTION = 'Welcome to FrequenPy!'
-EPILOG = "Enjoy!"
-HELP = 'Choose a system to simulate'
-BEADED_STRING_PARSER_NAME = 'bs'
-BEADED_STRING_HELP = 'Transverse oscillations on a beaded string'
-BEADED_STRING_MASSES_HELP = 'number of beads'
-BEADED_STRING_MODES_HELP = 'normal modes to combine. Ex: 1 2 3'
-BEADED_STRING_BOUNDARY_HELP = '0, 1, or 2, meanining fixed, free or mixed ends'
-BEADED_STRING_SAVE_HELP = 'save the animation in mp4 format'
-BEADED_STRING_SPEED_HELP = 'animation speed. Can be a float number'
+def setup_logger(verbose=False):
+    logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO, format=LOG_FORMAT)
+
+    # Hide logging from external libraries
+    external_libs = ['matplotlib', 'PIL']
+    for lib in external_libs:
+        logging.getLogger(lib).setLevel(logging.ERROR)
 
 
 def execute_bs(beads, modes, boundary, speed, save_animation):
-    try:
-        validate_bs_parameters(beads, modes)
-        beaded_string = factory.create(beads, modes, boundary)
+    # Move: this out of the cli.py module
+    validate_bs_parameters(beads, modes)
+    beaded_string = factory.create(beads, modes, boundary)
 
-        animation = Animation(
-            beaded_string, NUMBER_OF_FRAMES, speed, save_animation
-        )
-        animation.animate()
-    except Exception as e:
-        a = traceback.format_exc()
-        logging.debug(a)
-        logging.error(e)
+    animation = Animation(beaded_string, NUMBER_OF_FRAMES, speed, save_animation)
+    animation.animate()
 
 
 def add_beaded_string_parser(subparsers):
-    bs = subparsers.add_parser(
-        BEADED_STRING_PARSER_NAME,
-        help=BEADED_STRING_HELP
-    )
-    req = bs.add_argument_group("required arguments")
-    req.add_argument(
-        '-n',
-        dest='beads',
-        required=True,
-        help=BEADED_STRING_MASSES_HELP
-    )
-    req.add_argument(
-        '-m',
-        dest='modes',
-        required=True,
-        nargs='+',
-        help=BEADED_STRING_MODES_HELP
-    )
-    req.add_argument(
-        '-b',
-        dest='boundary',
-        required=True,
-        help=BEADED_STRING_BOUNDARY_HELP
-    )
-    opt = bs.add_argument_group("more optional arguments")
-    opt.add_argument(
-        '-s',
-        dest='speed',
-        required=False,
-        help=BEADED_STRING_SPEED_HELP
-    )
-    opt.add_argument(
-        '--save',
-        action='store_true',
-        help=BEADED_STRING_SAVE_HELP
-    )
-    return bs
+    p = subparsers.add_parser(BEADED_STRING, help=HELP_BEADED_STRING)
+
+    r = p.add_argument_group('required arguments')
+    r.add_argument('--beads', type=int, required=True, default=3, metavar='', help=HELP_BS_MASSES)
+
+    o = p.add_argument_group('optional arguments')
+    o.add_argument('--modes', type=int, default=[1], metavar='', nargs='+', help=HELP_BS_MODES)
+    o.add_argument('--boundary', type=int, default=0, help=HELP_BS_BOUNDARY)
+    o.add_argument('--speed', type=float, default=DEFAULT_SPEED, help=HELP_BS_SPEED)
+    o.add_argument('--save', action='store_true', help=HELP_BS_SAVE)
 
 
 def validate_bs_parameters(N, modes):
-
+    # TODO: move this out of the cli.py module
     if N < 1 or N > 40:
-        raise ValueError(
-            "Number of beads must be an integer between 1 and 40")
+        raise ValueError('Number of beads must be an integer between 1 and 40')
 
     if len(modes) < 1 or len(modes) > N:
         raise ValueError(
-            "The number of normal modes must be an integer between"
-            " 1 the number of beads!")
+            'The number of normal modes must be an integer between 1 the number of beads!')
 
     for mode in modes:
         if mode > N:
             raise ValueError(
-                "The max. normal mode for this system is {}!".format(N))
+                'The max. normal mode for this system is {}!'.format(N))
+
         if mode < 1:
-            raise ValueError("The min. normal mode is 1!")
+            raise ValueError('The min. normal mode is 1!')
 
 
-def validate_args_length(parser, subparsers):
+def parse_args(parser, subparsers):
+    help_arg = '--help'
     if len(sys.argv) < 2:
-            parser.print_help()
-            sys.exit(1)
-    elif len(sys.argv) == 2:
-        if sys.argv[1] == BEADED_STRING_PARSER_NAME:
-            subparsers.choices[BEADED_STRING_PARSER_NAME].print_help()
-        sys.exit(1)
+        return [help_arg]
+
+    if len(sys.argv) == 2:
+        system = sys.argv[1]
+        if system not in AVAILABLE_SYSTEMS:
+            raise ValueError(f'System {system} is not a valid option.')
+
+        return [system, help_arg]
+
+    return sys.argv[1:]
 
 
 def main():
-
-    parser = argparse.ArgumentParser(description=DESCRIPTION, epilog=EPILOG)
-    subparsers = parser.add_subparsers(help=HELP, dest='system')
+    parser = argparse.ArgumentParser(prog=APP_NAME, description=GREETING, epilog=APP_EPILOG)
+    subparsers = parser.add_subparsers(dest='system', help='Choose a system to simulate')
     add_beaded_string_parser(subparsers)
-    validate_args_length(parser, subparsers)
 
-    args = parser.parse_args()
+    setup_logger()
 
-    if args.system == BEADED_STRING_PARSER_NAME:
-        beads, modes = int(args.beads), list(map(int, args.modes))
-        execute_bs(
-            beads,
-            modes,
-            int(args.boundary),
-            float(args.speed) if args.speed else DEFAULT_SPEED,
-            args.save)
+    try:
+        args = parser.parse_args(args=parse_args(parser, subparsers))
+
+        if args.system == BEADED_STRING:
+            execute_bs(args.beads, args.modes, args.boundary, args.speed, args.save)
+
+    except ValueError as e:
+        logger.error(e)
 
 
 if __name__ == '__main__':

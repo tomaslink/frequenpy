@@ -1,13 +1,13 @@
 import setuptools
 
-DESCRIPTION = "High-precision physics engine dedicated to the study of standing waves."
+from frequenpy.constants import APP_DESCRIPTION
 
 setuptools.setup(
     name="frequenpy",
     version="0.2.0",
     author="Tomás Juan Link",
     author_email="tomaslink@gmail.com",
-    description=DESCRIPTION,
+    description=APP_DESCRIPTION,
     url="https://github.com/tomasjuanlink/frequenpy",
     packages=setuptools.find_packages(),
     classifiers=[
