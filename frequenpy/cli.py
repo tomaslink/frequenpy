@@ -24,8 +24,8 @@ AVAILABLE_SYSTEMS = [BEADED_STRING]
 
 HELP_DEFAULT = '(default: %(default)s)'
 
-HELP_BEADED_STRING = 'Transverse oscillations on a beaded string.'
-HELP_BS_MASSES = 'Number of beads.'
+HELP_BS = 'Transverse oscillations on a beaded string.'
+HELP_BS_MASSES = 'Number of masses.'
 HELP_BS_MODES = f'Normal modes to combine. Ex: "1 2 3" {HELP_DEFAULT}.'
 HELP_BS_BOUNDARY = f'Boundary conditions: 0 (fixed), 1 (free), or 2 (mixed) {HELP_DEFAULT}.'
 HELP_BS_SAVE = f'Save the animation in mp4 format {HELP_DEFAULT}.'
@@ -41,36 +41,23 @@ def setup_logger(verbose=False):
         logging.getLogger(lib).setLevel(logging.ERROR)
 
 
-def execute_bs(beads, modes, boundary, speed, save_animation):
+def execute_bs(masses, modes, boundary, speed, save_animation):
     # Move: this out of the cli.py module
-    validate_bs_parameters(beads, modes)
-    beaded_string = factory.create(beads, modes, boundary)
+    validate_bs_parameters(masses, modes)
+    beaded_string = factory.create(masses, modes, boundary)
 
     animation = Animation(beaded_string, NUMBER_OF_FRAMES, speed, save_animation)
     animation.animate()
 
 
-def add_beaded_string_parser(subparsers):
-    p = subparsers.add_parser(BEADED_STRING, help=HELP_BEADED_STRING)
-
-    r = p.add_argument_group('required arguments')
-    r.add_argument('--beads', type=int, required=True, default=3, metavar='', help=HELP_BS_MASSES)
-
-    o = p.add_argument_group('optional arguments')
-    o.add_argument('--modes', type=int, default=[1], metavar='', nargs='+', help=HELP_BS_MODES)
-    o.add_argument('--boundary', type=int, default=0, help=HELP_BS_BOUNDARY)
-    o.add_argument('--speed', type=float, default=DEFAULT_SPEED, help=HELP_BS_SPEED)
-    o.add_argument('--save', action='store_true', help=HELP_BS_SAVE)
-
-
 def validate_bs_parameters(N, modes):
     # TODO: move this out of the cli.py module
     if N < 1 or N > 40:
-        raise ValueError('Number of beads must be an integer between 1 and 40')
+        raise ValueError('Number of masses must be an integer between 1 and 40')
 
     if len(modes) < 1 or len(modes) > N:
         raise ValueError(
-            'The number of normal modes must be an integer between 1 the number of beads!')
+            'The number of normal modes must be an integer between 1 the number of masses!')
 
     for mode in modes:
         if mode > N:
@@ -79,6 +66,19 @@ def validate_bs_parameters(N, modes):
 
         if mode < 1:
             raise ValueError('The min. normal mode is 1!')
+
+
+def add_beaded_string_parser(subparsers):
+    p = subparsers.add_parser(BEADED_STRING, description=HELP_BS, help=HELP_BS)
+
+    r = p.add_argument_group('required arguments')
+    r.add_argument('--masses', type=int, required=True, default=3, metavar='', help=HELP_BS_MASSES)
+
+    o = p.add_argument_group('optional arguments')
+    o.add_argument('--modes', type=int, default=[1], metavar='', nargs='+', help=HELP_BS_MODES)
+    o.add_argument('--boundary', type=int, default=0, help=HELP_BS_BOUNDARY)
+    o.add_argument('--speed', type=float, default=DEFAULT_SPEED, help=HELP_BS_SPEED)
+    o.add_argument('--save', action='store_true', help=HELP_BS_SAVE)
 
 
 def parse_args(parser, subparsers):
@@ -107,7 +107,7 @@ def main():
         args = parser.parse_args(args=parse_args(parser, subparsers))
 
         if args.system == BEADED_STRING:
-            execute_bs(args.beads, args.modes, args.boundary, args.speed, args.save)
+            execute_bs(args.masses, args.modes, args.boundary, args.speed, args.save)
 
     except ValueError as e:
         logger.error(e)
