@@ -35,7 +35,7 @@ This results have been (and can be) demonstrated experimentally.
 
   As the number of masses gets higher and highter (***N*** ---> ***∞***),
   we approximate to the continuous system (a vibrating string - no discrete masses).
-  In this simulation, you can use **N = 40** to see the effect.
+  In this simulation, you can use **N = 30** to see a continuous effect.
 
 </div>
 
@@ -92,6 +92,8 @@ optional arguments:
   --boundary BOUNDARY  Boundary conditions: 0 (fixed), 1 (free), or 2 (mixed) (default: 0).
   --speed SPEED        Animation speed. Can be a float number (default: 1).
   --save               Save the animation in mp4 format (default: False).
+
+Example: frequenpy loaded_string --masses 3 --modes 1 2 3 --speed 0.1 --boundary 0
 ```
 
 Remember that for system of **N** masses there are N normal modes.

@@ -21,12 +21,15 @@ AVAILABLE_SYSTEMS = [BEADED_STRING]
 
 HELP_DEFAULT = '(default: %(default)s)'
 
-HELP_BS = 'Transverse oscillations on a string loaded with masses.'
-HELP_BS_MASSES = 'Number of masses.'
-HELP_BS_MODES = f'Normal modes to combine. Ex: "1 2 3" {HELP_DEFAULT}.'
-HELP_BS_BOUNDARY = f'Boundary conditions: 0 (fixed), 1 (free), or 2 (mixed) {HELP_DEFAULT}.'
-HELP_BS_SAVE = f'Save the animation in mp4 format {HELP_DEFAULT}.'
-HELP_BS_SPEED = f'Animation speed. Can be a float number {HELP_DEFAULT}.'
+HELP_LS = 'Transverse oscillations on a string loaded with masses.'
+HELP_LS_MASSES = 'Number of masses.'
+HELP_LS_MODES = f'Normal modes to combine. Ex: "1 2 3" {HELP_DEFAULT}.'
+HELP_LS_BOUNDARY = f'Boundary conditions: 0 (fixed), 1 (free), or 2 (mixed) {HELP_DEFAULT}.'
+HELP_LS_SAVE = f'Save the animation in mp4 format {HELP_DEFAULT}.'
+HELP_LS_SPEED = f'Animation speed. Can be a float number {HELP_DEFAULT}.'
+
+EXAMPLE_LS = "frequenpy loaded_string --masses 3 --modes 1 2 3 --speed 0.1 --boundary 0"
+EPILOG_LS = "Example: {}".format(EXAMPLE_LS)
 
 
 def setup_logger(verbose=False):
@@ -39,16 +42,16 @@ def setup_logger(verbose=False):
 
 
 def add_loaded_string_parser(subparsers):
-    p = subparsers.add_parser(BEADED_STRING, description=HELP_BS, help=HELP_BS)
+    p = subparsers.add_parser(BEADED_STRING, description=HELP_LS, help=HELP_LS, epilog=EPILOG_LS)
 
     r = p.add_argument_group('required arguments')
-    r.add_argument('--masses', type=int, required=True, default=3, metavar='', help=HELP_BS_MASSES)
+    r.add_argument('--masses', type=int, required=True, default=3, metavar='', help=HELP_LS_MASSES)
 
     o = p.add_argument_group('optional arguments')
-    o.add_argument('--modes', type=int, default=[1], metavar='', nargs='+', help=HELP_BS_MODES)
-    o.add_argument('--boundary', type=int, default=0, help=HELP_BS_BOUNDARY)
-    o.add_argument('--speed', type=float, default=DEFAULT_SPEED, help=HELP_BS_SPEED)
-    o.add_argument('--save', action='store_true', help=HELP_BS_SAVE)
+    o.add_argument('--modes', type=int, default=[1], metavar='', nargs='+', help=HELP_LS_MODES)
+    o.add_argument('--boundary', type=int, default=0, help=HELP_LS_BOUNDARY)
+    o.add_argument('--speed', type=float, default=DEFAULT_SPEED, help=HELP_LS_SPEED)
+    o.add_argument('--save', action='store_true', help=HELP_LS_SAVE)
 
 
 def parse_args(parser, subparsers):
