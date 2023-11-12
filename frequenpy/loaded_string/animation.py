@@ -30,34 +30,73 @@ MARGIN_BOTTOM = 0.05
 MARGIN_RIGHT = 0.95
 MARGIN_TOP = 0.95
 
-ANIMATIONS_FOLDER = 'workdir'
+OUTPUT_FOLDER = 'workdir'
 FILENAME_TPL = "{}masses_{}modes.mp4"
 
-NUMBER_OF_FRAMES = 2000
-DEFAULT_SPEED = 1
+N_FRAMES = 2000
+SPEED = 1
 
 
-class LoadedStringAnimation(object):
-    def __init__(self, loaded_string, number_of_frames, speed=DEFAULT_SPEED):
+class LoadedStringAnimation:
+    def __init__(self, loaded_string, n_frames=N_FRAMES, speed=SPEED, folder=OUTPUT_FOLDER):
         self._loaded_string = loaded_string
-        self._number_of_frames = number_of_frames
+        self._n_frames = n_frames
         self._speed = speed
+        self._folder = folder
 
         self._line = self._build_line()
         self._figure = self._build_figure()
         self._frames = self._build_frames()
 
-    def animate(self, save=False):
+    def start(self, save=False):
         anim = self._build_animation()
 
         if save:
-            self._save(anim)
+            return self._save(anim)
 
         plt.show()
 
-    def build(N, modes, boundary, speed):
+    @classmethod
+    def build(cls, N, modes, boundary, **kwargs):
         loaded_string = loaded_string_factory.create(N, modes, boundary)
-        return LoadedStringAnimation(loaded_string, NUMBER_OF_FRAMES, speed)
+        return cls(loaded_string, **kwargs)
+
+    def _build_line(self):
+        if self._loaded_string.N == self._loaded_string.CONTINUOUS_LIMIT:
+            return self._build_line_without_markers()
+        else:
+            return self._build_line_with_markers()
+
+    def _build_line_with_markers(self):
+        X, Y = self._loaded_string.rest_position
+
+        return plt.Line2D(
+            X, Y,
+            marker=LINE_MARKERTYPE,
+            lw=LINE_WIDTH,
+            markersize=LINE_MARKERSIZE,
+            markerfacecolor=LINE_MARKERFACECOLOR,
+            color=LINE_COLOR,
+            markevery=slice(1, len(X) - 1, 1)
+        )
+
+    def _build_line_without_markers(self):
+        X, Y = self._loaded_string.rest_position
+
+        return plt.Line2D(
+            X, Y,
+            lw=LINE_WIDTH,
+            color=LINE_COLOR
+        )
+
+    def _build_frames(self):
+        self._loaded_string.apply_speed(self._speed)
+        frames = range(0, self._n_frames)
+
+        return [
+            self._loaded_string.position_at_time_t(t)
+            for t in frames
+        ]
 
     def _build_figure(self):
         x_rest_position, _ = self._loaded_string.rest_position
@@ -99,43 +138,6 @@ class LoadedStringAnimation(object):
     def _right_support(self, x_distance_from_origin):
         return self._support(x_distance_from_origin)
 
-    def _build_line(self):
-        if self._loaded_string.N == self._loaded_string.CONTINUOUS_LIMIT:
-            return self._build_line_without_markers()
-        else:
-            return self._build_line_with_markers()
-
-    def _build_line_with_markers(self):
-        X, Y = self._loaded_string.rest_position
-
-        return plt.Line2D(
-            X, Y,
-            marker=LINE_MARKERTYPE,
-            lw=LINE_WIDTH,
-            markersize=LINE_MARKERSIZE,
-            markerfacecolor=LINE_MARKERFACECOLOR,
-            color=LINE_COLOR,
-            markevery=slice(1, len(X) - 1, 1)
-        )
-
-    def _build_line_without_markers(self):
-        X, Y = self._loaded_string.rest_position
-
-        return plt.Line2D(
-            X, Y,
-            lw=LINE_WIDTH,
-            color=LINE_COLOR
-        )
-
-    def _build_frames(self):
-        self._loaded_string.apply_speed(self._speed)
-        frames = range(0, self._number_of_frames)
-
-        return [
-            self._loaded_string.position_at_time_t(t)
-            for t in frames
-        ]
-
     def _update(self, frame_number):
         self._line.set_data(self._frames[frame_number])
 
@@ -145,7 +147,7 @@ class LoadedStringAnimation(object):
         return animation.FuncAnimation(
             self._figure,
             self._update,
-            frames=self._number_of_frames,
+            frames=self._n_frames,
             interval=5,
             blit=True,
             repeat=True)
@@ -153,12 +155,14 @@ class LoadedStringAnimation(object):
     def _save(self, animation):
         logger.info('Saving animation...this could take a while...')
 
-        self._create_directory(ANIMATIONS_FOLDER)
+        self._create_folder(self._folder)
         filename = FILENAME_TPL.format(self._loaded_string.N, self._loaded_string.modes)
-        filepath = path.join(ANIMATIONS_FOLDER, filename)
+        filepath = path.join(self._folder, filename)
 
         animation.save(filepath, savefig_kwargs={'facecolor': BACKGROUND_COLOR})
 
-    def _create_directory(self, directory):
-        if not path.exists(directory):
-            makedirs(directory)
+        return filepath
+
+    def _create_folder(self, folder):
+        if not path.exists(folder):
+            makedirs(folder)

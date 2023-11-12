@@ -3,7 +3,7 @@ import logging
 
 import argparse
 
-from frequenpy.loaded_string.animation import LoadedStringAnimation, DEFAULT_SPEED
+from frequenpy.loaded_string.animation import LoadedStringAnimation
 
 from frequenpy.constants import APP_DESCRIPTION, APP_NAME
 
@@ -31,6 +31,8 @@ HELP_LS_SPEED = f'Animation speed. Can be a float number {HELP_DEFAULT}.'
 EXAMPLE_LS = "frequenpy loaded_string --masses 3 --modes 1 2 3 --speed 0.1 --boundary 0"
 EPILOG_LS = "Example: {}".format(EXAMPLE_LS)
 
+OUTPUT_FOLDER = 'workdir'
+
 
 def setup_logger(verbose=False):
     logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO, format=LOG_FORMAT)
@@ -50,43 +52,46 @@ def add_loaded_string_parser(subparsers):
     o = p.add_argument_group('optional arguments')
     o.add_argument('--modes', type=int, default=[1], metavar='', nargs='+', help=HELP_LS_MODES)
     o.add_argument('--boundary', type=int, default=0, help=HELP_LS_BOUNDARY)
-    o.add_argument('--speed', type=float, default=DEFAULT_SPEED, help=HELP_LS_SPEED)
+    o.add_argument('--speed', type=float, default=1, help=HELP_LS_SPEED)
     o.add_argument('--save', action='store_true', help=HELP_LS_SAVE)
 
 
-def parse_args(parser, subparsers):
+def parse_args(args):
     help_arg = '--help'
-    if len(sys.argv) < 2:
+    if len(args) == 0:
         return [help_arg]
 
-    if len(sys.argv) == 2:
-        system = sys.argv[1]
+    if len(args) == 1:
+        system = args[0]
         if system not in AVAILABLE_SYSTEMS:
             raise ValueError(f'System {system} is not a valid option.')
 
         return [system, help_arg]
 
-    return sys.argv[1:]
+    return args
 
 
-def main():
-    parser = argparse.ArgumentParser(prog=APP_NAME, description=GREETING, epilog=APP_EPILOG)
-    subparsers = parser.add_subparsers(dest='system', help='Choose a system to simulate')
-    add_loaded_string_parser(subparsers)
-
+def run(args, folder=OUTPUT_FOLDER):
     setup_logger()
-
     try:
-        args = parser.parse_args(args=parse_args(parser, subparsers))
+        parser = argparse.ArgumentParser(prog=APP_NAME, description=GREETING, epilog=APP_EPILOG)
+        subparsers = parser.add_subparsers(dest='system', help='Choose a system to simulate')
+        add_loaded_string_parser(subparsers)
+
+        args = parser.parse_args(args=parse_args(args))
 
         if args.system == BEADED_STRING:
             animation = LoadedStringAnimation.build(
-                args.masses, args.modes, args.boundary, args.speed)
+                args.masses, args.modes, args.boundary, speed=args.speed, folder=folder)
 
-            animation.animate(save=args.save)
+            animation.start(save=args.save)
 
     except ValueError as e:
         logger.error(e)
+
+
+def main():
+    run(sys.argv[1:])
 
 
 if __name__ == '__main__':
