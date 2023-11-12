@@ -18,7 +18,7 @@ def create(N, modes, boundary):
     if boundary == BOUNDARY_FREE:
         return LoadedStringFree(N, modes)
     else:
-        raise NotImplementedError(
+        raise ValueError(
             "{} is not a valid boundary condition".format(boundary)
         )
 

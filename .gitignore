@@ -1,8 +1,8 @@
 __pycache__
-test*.py
 dist
 build
 *egg-info*
 
 .venv
 workdir
+.coverage

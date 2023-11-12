@@ -22,6 +22,9 @@ class LoadedString(ABC):
 
         self.rest_position = self._get_rest_position()
 
+    def __len__(self):
+        return self.N
+
     def position_at_time_t(self, t):
         X, _ = self.rest_position
         Y = self._y_position_at_time_t(t)
@@ -70,7 +73,7 @@ class LoadedString(ABC):
 
     @abstractmethod
     def _wavenumber(self, p):
-        pass
+        pass  # pragma: nocover
 
 
 class LoadedStringFixed(LoadedString):

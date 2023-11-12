@@ -1,0 +1,6 @@
+[run]
+	branch = True
+
+omit =
+	frequenpy/version.py
+	frequenpy/constants.py
