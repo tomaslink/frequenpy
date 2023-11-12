@@ -1,12 +1,17 @@
-from matplotlib import pyplot as plt
-from matplotlib import animation
+import logging
 from os import path, makedirs
 
+from matplotlib import pyplot as plt
+from matplotlib import animation
 
-LINE_WIDTH = 0.5
+from frequenpy.loaded_string import loaded_string_factory
+
+logger = logging.getLogger(__name__)
+
+LINE_WIDTH = 1
 LINE_MARKERTYPE = 'o'
 LINE_MARKERSIZE = 8
-LINE_MARKERFACECOLOR = 'white'
+LINE_MARKERFACECOLOR = 'None'
 LINE_COLOR = 'white'
 
 BACKGROUND_COLOR = 'black'
@@ -15,9 +20,9 @@ WALL_HEIGHT = 0.8
 WALL_WIDTH = 0.5
 WALL_COLOR = 'white'
 
-FIG_SIZE = (10, 5)
+FIG_SIZE = (7, 2)
 FIG_DPI = 100
-FIG_X_LIMIT = (-0.8, 0.8)
+FIG_X_LIMIT = (-0.5, 0.5)
 FIG_Y_LIMIT = (-1, 1)
 
 MARGIN_LEFT = 0.05
@@ -25,24 +30,41 @@ MARGIN_BOTTOM = 0.05
 MARGIN_RIGHT = 0.95
 MARGIN_TOP = 0.95
 
-ANIMATIONS_FOLDER = 'animations'
+ANIMATIONS_FOLDER = 'workdir'
+FILENAME_TPL = "{}masses_{}modes.mp4"
 
-CONTINUOUS_LIMIT = 30
+NUMBER_OF_FRAMES = 2000
+DEFAULT_SPEED = 1
 
 
-class Animation(object):
-
-    def __init__(self, beaded_string, number_of_frames, speed, save_animation):
-        self._beaded_string = beaded_string
+class LoadedStringAnimation(object):
+    def __init__(self, loaded_string, number_of_frames, speed=DEFAULT_SPEED):
+        self._loaded_string = loaded_string
         self._number_of_frames = number_of_frames
         self._speed = speed
-        self._save_animation = save_animation
+
         self._line = self._build_line()
-        self._frames = self._build_frames()
         self._figure = self._build_figure()
+        self._frames = self._build_frames()
+
+    def animate(self, save=False):
+        anim = self._build_animation()
+
+        if save:
+            self._save(anim)
+
+        plt.show()
+
+    def build(N, modes, boundary, speed):
+        loaded_string = loaded_string_factory.create(N, modes, boundary)
+        return LoadedStringAnimation(loaded_string, NUMBER_OF_FRAMES, speed)
 
     def _build_figure(self):
+        x_rest_position, _ = self._loaded_string.rest_position
+        support_distance_from_origin = abs(x_rest_position[0])
+
         fig = plt.figure(figsize=FIG_SIZE, facecolor=BACKGROUND_COLOR)
+
         fig.set_dpi(FIG_DPI)
         fig.subplots_adjust(
             left=MARGIN_LEFT,
@@ -50,14 +72,17 @@ class Animation(object):
             right=MARGIN_RIGHT,
             top=MARGIN_TOP
         )
+
         ax = plt.axes(xlim=FIG_X_LIMIT, ylim=FIG_Y_LIMIT, frameon=False)
         ax.set_yticks([])
-        ax.set_yticks([])
-        x_rest_position, _ = self._beaded_string.rest_position
-        support_distance_from_origin = abs(x_rest_position[0])
+        ax.set_xticks([])
+
         ax.add_line(self._left_support(support_distance_from_origin))
         ax.add_line(self._right_support(support_distance_from_origin))
         ax.add_line(self._line)
+
+        plt.get_current_fig_manager().window.resizable(False, False)
+
         return fig
 
     def _support(self, x_coordinate):
@@ -75,13 +100,14 @@ class Animation(object):
         return self._support(x_distance_from_origin)
 
     def _build_line(self):
-        if self._beaded_string.number_of_beads > CONTINUOUS_LIMIT:
+        if self._loaded_string.N == self._loaded_string.CONTINUOUS_LIMIT:
             return self._build_line_without_markers()
         else:
             return self._build_line_with_markers()
 
     def _build_line_with_markers(self):
-        X, Y = self._beaded_string.rest_position
+        X, Y = self._loaded_string.rest_position
+
         return plt.Line2D(
             X, Y,
             marker=LINE_MARKERTYPE,
@@ -93,7 +119,8 @@ class Animation(object):
         )
 
     def _build_line_without_markers(self):
-        X, Y = self._beaded_string.rest_position
+        X, Y = self._loaded_string.rest_position
+
         return plt.Line2D(
             X, Y,
             lw=LINE_WIDTH,
@@ -101,15 +128,17 @@ class Animation(object):
         )
 
     def _build_frames(self):
-        self._beaded_string.apply_speed(self._speed)
+        self._loaded_string.apply_speed(self._speed)
         frames = range(0, self._number_of_frames)
+
         return [
-            self._beaded_string.position_at_time_t(t)
+            self._loaded_string.position_at_time_t(t)
             for t in frames
         ]
 
     def _update(self, frame_number):
         self._line.set_data(self._frames[frame_number])
+
         return self._line,
 
     def _build_animation(self):
@@ -122,24 +151,13 @@ class Animation(object):
             repeat=True)
 
     def _save(self, animation):
-        print('Saving animation...this could take a while...')
-        name = "{}masses_{}modes.mp4".format(
-            self._beaded_string.number_of_beads,
-            str(self._beaded_string.normal_modes)
-        )
+        logger.info('Saving animation...this could take a while...')
+
         self._create_directory(ANIMATIONS_FOLDER)
-        full_path = path.join(ANIMATIONS_FOLDER, name)
-        animation.save(
-            full_path, savefig_kwargs={'facecolor': BACKGROUND_COLOR}
-        )
+        filename = FILENAME_TPL.format(self._loaded_string.N, self._loaded_string.modes)
+        filepath = path.join(ANIMATIONS_FOLDER, filename)
 
-    def animate(self):
-        anim = self._build_animation()
-
-        if self._save_animation:
-            self._save(anim)
-
-        plt.show()
+        animation.save(filepath, savefig_kwargs={'facecolor': BACKGROUND_COLOR})
 
     def _create_directory(self, directory):
         if not path.exists(directory):

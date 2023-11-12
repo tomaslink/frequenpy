@@ -11,7 +11,7 @@ In this section I will briefly explain the systems available for simulation,
 according predictions of wave theory.
 This results have been (and can be) demonstrated experimentally.
 
-### Beaded string loaded with N masses oscillating transversally. 
+### String loaded with with N masses oscillating transversally. 
 
 <p align="center">
    <img src="docs/beaded_string.gif">
@@ -57,26 +57,29 @@ frequenpy
 
 This will prompt the following help:
 ```bash
-usage: FrequenPy [-h] {beaded_string} ...
+(.venv) $ frequenpy
+usage: FrequenPy [-h] {loaded_string} ...
 
 Welcome to FrequenPy! High-precision physics engine dedicated to the study of standing waves.
 
 positional arguments:
-  {beaded_string}  Choose a system to simulate
-    beaded_string  Transverse oscillations on a beaded string.
+  {loaded_string}  Choose a system to simulate
+    loaded_string  Transverse oscillations on a string loaded with masses.
 
 options:
   -h, --help       show this help message and exit
 
 Enjoy!
+
 ```
 
-If you pass **beaded_string** as an argument:
+If you pass **loaded_string** as an argument:
+
 ```bash
 (.venv) $ frequenpy beaded_string
 usage: FrequenPy beaded_string [-h] --masses  [--modes  [...]] [--boundary BOUNDARY] [--speed SPEED] [--save]
 
-Transverse oscillations on a beaded string.
+Transverse oscillations on a string loaded with masses.
 
 options:
   -h, --help           show this help message and exit
@@ -87,12 +90,12 @@ required arguments:
 optional arguments:
   --modes  [ ...]      Normal modes to combine. Ex: "1 2 3" (default: [1]).
   --boundary BOUNDARY  Boundary conditions: 0 (fixed), 1 (free), or 2 (mixed) (default: 0).
-  --speed SPEED        Animation speed. Can be a float number (default: 1.5).
+  --speed SPEED        Animation speed. Can be a float number (default: 1).
   --save               Save the animation in mp4 format (default: False).
 ```
 
 Remember that for system of **N** masses there are N normal modes.
-You can pass only one of them, or a combination of several normal modes, e.g. "2 6 3".
+You can pass only one of them or a combination of several, e.g. "2 6 3".
 The order doesn't matter. 
 
 
@@ -100,8 +103,9 @@ The order doesn't matter.
 
 - Interactive GUI to be able to play more easily with all the parameters of the system. 
 - Plot each individual normal mode that is contributing to the movement.
-- **Beaded String**:
-  - Introduce damping and tension as parameters.
-  - Allow initial conditions to generate more arbitrary and crazy movements of the string, like picking the string with your mouse and realease it from some position. 
+- **Loaded String**:
+  - Allow changing damping and tension as parameters.
+  - Allow initial conditions to generate more arbitrary and crazy movements of the string,
+  like picking the string with your mouse and realease it from some position. 
 
 

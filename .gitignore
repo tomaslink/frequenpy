@@ -1,8 +1,8 @@
 __pycache__
 test*.py
-animations
 dist
 build
 *egg-info*
 
 .venv
+workdir
