@@ -3,8 +3,7 @@ import logging
 
 import argparse
 
-import frequenpy.beaded_string.beaded_string_factory as factory
-from frequenpy.beaded_string.animation import Animation
+from frequenpy.loaded_string.animation import LoadedStringAnimation, DEFAULT_SPEED
 
 from frequenpy.constants import APP_DESCRIPTION, APP_NAME
 
@@ -16,15 +15,13 @@ LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
 GREETING = F'Welcome to {APP_NAME}!\n {APP_DESCRIPTION}'
 APP_EPILOG = 'Enjoy!'
-NUMBER_OF_FRAMES = 2000
-DEFAULT_SPEED = 1.5
 
-BEADED_STRING = 'beaded_string'
+BEADED_STRING = 'loaded_string'
 AVAILABLE_SYSTEMS = [BEADED_STRING]
 
 HELP_DEFAULT = '(default: %(default)s)'
 
-HELP_BS = 'Transverse oscillations on a beaded string.'
+HELP_BS = 'Transverse oscillations on a string loaded with masses.'
 HELP_BS_MASSES = 'Number of masses.'
 HELP_BS_MODES = f'Normal modes to combine. Ex: "1 2 3" {HELP_DEFAULT}.'
 HELP_BS_BOUNDARY = f'Boundary conditions: 0 (fixed), 1 (free), or 2 (mixed) {HELP_DEFAULT}.'
@@ -41,34 +38,7 @@ def setup_logger(verbose=False):
         logging.getLogger(lib).setLevel(logging.ERROR)
 
 
-def execute_bs(masses, modes, boundary, speed, save_animation):
-    # Move: this out of the cli.py module
-    validate_bs_parameters(masses, modes)
-    beaded_string = factory.create(masses, modes, boundary)
-
-    animation = Animation(beaded_string, NUMBER_OF_FRAMES, speed, save_animation)
-    animation.animate()
-
-
-def validate_bs_parameters(N, modes):
-    # TODO: move this out of the cli.py module
-    if N < 1 or N > 40:
-        raise ValueError('Number of masses must be an integer between 1 and 40')
-
-    if len(modes) < 1 or len(modes) > N:
-        raise ValueError(
-            'The number of normal modes must be an integer between 1 the number of masses!')
-
-    for mode in modes:
-        if mode > N:
-            raise ValueError(
-                'The max. normal mode for this system is {}!'.format(N))
-
-        if mode < 1:
-            raise ValueError('The min. normal mode is 1!')
-
-
-def add_beaded_string_parser(subparsers):
+def add_loaded_string_parser(subparsers):
     p = subparsers.add_parser(BEADED_STRING, description=HELP_BS, help=HELP_BS)
 
     r = p.add_argument_group('required arguments')
@@ -99,7 +69,7 @@ def parse_args(parser, subparsers):
 def main():
     parser = argparse.ArgumentParser(prog=APP_NAME, description=GREETING, epilog=APP_EPILOG)
     subparsers = parser.add_subparsers(dest='system', help='Choose a system to simulate')
-    add_beaded_string_parser(subparsers)
+    add_loaded_string_parser(subparsers)
 
     setup_logger()
 
@@ -107,7 +77,10 @@ def main():
         args = parser.parse_args(args=parse_args(parser, subparsers))
 
         if args.system == BEADED_STRING:
-            execute_bs(args.masses, args.modes, args.boundary, args.speed, args.save)
+            animation = LoadedStringAnimation.build(
+                args.masses, args.modes, args.boundary, args.speed)
+
+            animation.animate(save=args.save)
 
     except ValueError as e:
         logger.error(e)
