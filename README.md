@@ -1,11 +1,13 @@
 
-# FrequenPy
+<h1 align="center" style="border-bottom: none;"> FrequenPy </h1>
 
-![coverage_badge](https://codecov.io/gh/tomaslink/frequenpy/branch/master/graph/badge.svg) 
+<p align="center">
+  <a>
+    <img alt="Coverage" src="https://codecov.io/gh/tomaslink/frequenpy/branch/master/graph/badge.svg">
+  </a>
+</p>
 
-_FrequenPy_ is a high-precision physics engine dedicated to the study of standing waves and visualization of its normal modes.
-
-This package has educational purposes. 
+**frequenpy** is a high-precision physics engine dedicated to the study and visualization of standing waves.
 
 ## Wave theory
 
@@ -21,21 +23,38 @@ This results have been (and can be) demonstrated experimentally.
 
 <div align="justify">
   
-  According to wave theory, any arbitrary movement of the string
-  can be decomposed into a superposition of natural modes of oscillation.
-  In each natural mode **m**,
-  all masses in the system oscilate at the same frequency ***f(m)***
-  and pass through the equilibrium position at the same time.
-  This natural modes of oscillation are called **normal modes**.
+  A flexible elastic string with tension **T** is loaded with **N** identical particles,
+  each of mass **m**, equally spaced a distance **a** apart.
+  Let us hold the string fixed at two points,
+  one at a distance **a** to the left of the first particle
+  and the other at a distance **a** to the right of the Nth particle.
 
+  According to the theory, the movement of each of the masses in the vertical direction
+  can be decomposed into a superposition of **N** **normal modes** modes of oscillation.
+  That way, the $y$ position of the particle **n** as a function of time is
+  ```math
+    y_n(t) = \sum_{p=1}^N A_p \sin(k_p n a) \cos(\omega_p t + \theta_p).
+  ```
+  Where $A_p$ and $\theta_p$ depend on the initial conditions,
+  $k_p$ will depend on the boundary conditions and $\omega_p$ will have the form
+  ```math
+    \omega_p = 2 \omega_0 \sin\left(\frac{p \pi}{2(N + 1)}\right)
+    \qquad,
+    \qquad
+    \omega_0 = \sqrt{\frac{T}{ma}}.
+  ```
+  
   There are as many normal modes as there are degrees of freedom (masses) in the system.
-  So, a string loaded with **N** masses, will have **N** **normal modes**.
-  The first will corresponde to the lowest frequency (called fundamental)
-  and each next will be higher than the previous one, until we reach the last and highest frequency.
-  Any movement, as strange as it may be, can be expressed as a superposition of those **N** normal modes
+  In each natural mode **p**,
+  all masses in the system oscilate at the same frequency $\omega_p$
+  and pass through the equilibrium position at the same time.
+  The first mode, **p=1**, corresponds to the lowest frequency (called fundamental)
+  and each subsequent mode will have a frequency higher than the previous one.
+  Any movement of the string, as strange as it may be,
+  can be expressed as a superposition of those **N** normal modes
   (some will contribute more than others to the final movement). 
 
-  As the number of masses gets higher and highter (***N*** ---> ***∞***),
+  As the number of masses gets higher and highter ($N \rightarrow \infty$),
   we approximate to the continuous system (a vibrating string - no discrete masses).
   In this simulation, you can use **N = 30** to see a continuous effect.
 
@@ -98,7 +117,7 @@ optional arguments:
 Example: frequenpy loaded_string --masses 3 --modes 1 2 3 --speed 0.1 --boundary 0
 ```
 
-Remember that for system of **N** masses there are N normal modes.
+Remember that for system of **N** masses there are **N** normal modes.
 You can pass only one of them or a combination of several, e.g. "2 6 3".
 The order doesn't matter. 
 
