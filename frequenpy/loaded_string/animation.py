@@ -1,12 +1,14 @@
 import logging
 from os import path, makedirs
 
+import matplotlib
 from matplotlib import pyplot as plt
 from matplotlib import animation
 
 from frequenpy.loaded_string import loaded_string_factory
 
 logger = logging.getLogger(__name__)
+
 
 LINE_WIDTH = 1
 LINE_MARKERTYPE = 'o'
@@ -120,7 +122,8 @@ class LoadedStringAnimation:
         ax.add_line(self._right_support(support_distance_from_origin))
         ax.add_line(self._line)
 
-        plt.get_current_fig_manager().window.resizable(False, False)
+        if matplotlib.get_backend() == 'TkAgg':
+            plt.get_current_fig_manager().window.resizable(False, False)
 
         return fig
 

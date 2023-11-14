@@ -1,4 +1,4 @@
 flake8<7
-pytest-cov<5
+-r requirements-test.txt
 
 -e .
