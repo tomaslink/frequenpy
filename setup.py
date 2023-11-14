@@ -25,6 +25,7 @@ setuptools.setup(
     },
     install_requires=[
         'numpy<2',
-        'matplotlib<4'
+        'matplotlib<4',
+        'ffmpeg-python'
     ]
 )

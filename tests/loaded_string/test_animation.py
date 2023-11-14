@@ -1,5 +1,4 @@
 import os
-
 from matplotlib import pyplot
 
 from frequenpy.loaded_string.animation import LoadedStringAnimation
