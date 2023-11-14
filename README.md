@@ -1,6 +1,8 @@
 
 # FrequenPy
 
+![coverage_badge](https://codecov.io/gh/tomaslink/frequenpy/branch/master/graph/badge.svg) 
+
 _FrequenPy_ is a high-precision physics engine dedicated to the study of standing waves and visualization of its normal modes.
 
 This package has educational purposes. 

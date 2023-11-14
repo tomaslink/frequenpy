@@ -40,9 +40,14 @@ jobs:
         run: |
           sudo apt-get install -y ffmpeg
           python -m pip install --upgrade pip
-          pip install .
+          pip install -e .
     
       - name: Test with pytest
         run: |
           pip install -r requirements-test.txt
           pytest --cov=frequenpy --cov-report=term-missing
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
