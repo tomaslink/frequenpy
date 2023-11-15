@@ -3,10 +3,10 @@ from abc import ABC, abstractmethod
 
 
 LONGITUDE = 1
-TENSION = 0.5
+TENSION = 1
 MASS = 0.1
 
-AMPLITUDE = 0.5
+AMPLITUDE = 0.2
 THETA = 0
 
 
@@ -18,6 +18,8 @@ class LoadedString(ABC):
         self._modes = modes
         self._masses = range(0, N + 2)
         self._a = LONGITUDE / (N + 1)
+
+        self._omega0 = np.sqrt(TENSION / (MASS * self._a))
         self._omega = self._omega()
 
         self.rest_position = self._get_rest_position()
@@ -57,7 +59,7 @@ class LoadedString(ABC):
 
     def _omega(self):
         return {
-            p: 2 * np.sqrt(TENSION / MASS * self._a) * np.sin(self._wavenumber(p) * self._a / 2)
+            p: 2 * self._omega0 * np.sin((self._wavenumber(p) * self._a) / 2)
             for p in self._modes
         }
 

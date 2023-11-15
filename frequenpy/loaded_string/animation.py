@@ -10,10 +10,10 @@ from frequenpy.loaded_string import loaded_string_factory
 logger = logging.getLogger(__name__)
 
 
-LINE_WIDTH = 1
+LINE_WIDTH = 0.5
 LINE_MARKERTYPE = 'o'
 LINE_MARKERSIZE = 8
-LINE_MARKERFACECOLOR = 'None'
+LINE_MARKERFACECOLOR = 'gray'
 LINE_COLOR = 'white'
 
 BACKGROUND_COLOR = 'black'
@@ -22,7 +22,7 @@ WALL_HEIGHT = 0.8
 WALL_WIDTH = 0.5
 WALL_COLOR = 'white'
 
-FIG_SIZE = (7, 2)
+FIG_SIZE = (7, 4)
 FIG_DPI = 100
 FIG_X_LIMIT = (-0.5, 0.5)
 FIG_Y_LIMIT = (-1, 1)
@@ -93,11 +93,10 @@ class LoadedStringAnimation:
 
     def _build_frames(self):
         self._loaded_string.apply_speed(self._speed)
-        frames = range(0, self._n_frames)
 
         return [
             self._loaded_string.position_at_time_t(t)
-            for t in frames
+            for t in range(0, self._n_frames)
         ]
 
     def _build_figure(self):
@@ -117,6 +116,8 @@ class LoadedStringAnimation:
         ax = plt.axes(xlim=FIG_X_LIMIT, ylim=FIG_Y_LIMIT, frameon=False)
         ax.set_yticks([])
         ax.set_xticks([])
+        ax.set_xlim(-0.5, 0.51)
+        ax.set_ylim(-0.5, 0.51)
 
         ax.add_line(self._left_support(support_distance_from_origin))
         ax.add_line(self._right_support(support_distance_from_origin))
@@ -151,7 +152,7 @@ class LoadedStringAnimation:
             self._figure,
             self._update,
             frames=self._n_frames,
-            interval=5,
+            interval=10,
             blit=True,
             repeat=True)
 
